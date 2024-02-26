@@ -18,25 +18,15 @@ contract NFTMarketplace is ERC721, Ownable, ERC721URIStorage{
         bool isActive;
     }
 
-    enum UserRole {
-        Admin,
-        Seller, 
-        Buyer
-    }
-
     mapping(uint256 => Sale) public sales;
-    mapping(address => UserRole) public userRoles;
+    mapping(address => bool) private isSeller;
 
 
     constructor(address initialOwner) ERC721("NFTMarketplace", "NFTMKPL")  Ownable(initialOwner) {}
 
-    modifier onlySeller() {
-        require(userRoles[msg.sender] == UserRole.Seller, "Caller is not a seller");
-        _;
-    }
 
-    function setUserRole(address user, UserRole role) public onlyOwner {
-        userRoles[user] = role;
+    function addSeller(address _seller) external onlyOwner {
+        isSeller[_seller] = true;
     }
 
     function safeMint(address to, string memory uri) external  onlyOwner {
@@ -45,13 +35,15 @@ contract NFTMarketplace is ERC721, Ownable, ERC721URIStorage{
         _setTokenURI(_tokenId, uri);
     }
 
-    function listForSale(uint256 tokenId, uint256 _price, string calldata _name) external onlySeller {
+    function listForSale(uint256 tokenId, uint256 _price, string calldata _name) external {
+        require(isSeller[msg.sender], "Caller is not a seller");
         require(ownerOf(tokenId) == msg.sender, "Not the owner");
+        require(!sales[tokenId].isActive, "NFT is already listed for sale");
         sales[tokenId] = Sale(msg.sender, _name, _price, true);
     }
 
-    function buy(uint256 tokenId) public payable {
-        require(sales[tokenId].isActive, "NFT has been sole");
+    function buy(uint256 tokenId) external payable {
+        require(sales[tokenId].isActive, "NFT not listed for sale");
         require(msg.value >= sales[tokenId].price, "Insufficient funds");
 
         address seller = sales[tokenId].seller;
@@ -86,3 +78,5 @@ contract NFTMarketplace is ERC721, Ownable, ERC721URIStorage{
         return super.supportsInterface(interfaceId);
     }
 }
+
+// 1000000000000000000
