@@ -6,17 +6,15 @@ async function main() {
 
   const lockedAmount = ethers.parseEther("0.001");
 
-  const lock = await ethers.deployContract("Lock", [unlockTime], {
-    value: lockedAmount,
-  });
+  const initialOwner = "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266";
 
-  await lock.waitForDeployment();
+  const NFTMarket = await ethers.deployContract("VickishNFTMarketplace", [
+    initialOwner,
+  ]);
 
-  console.log(
-    `Lock with ${ethers.formatEther(
-      lockedAmount
-    )}ETH and unlock timestamp ${unlockTime} deployed to ${lock.target}`
-  );
+  await NFTMarket.waitForDeployment();
+
+  console.log(`NFTMarket deployed to ${NFTMarket.target}`);
 }
 
 // We recommend this pattern to be able to use async/await everywhere

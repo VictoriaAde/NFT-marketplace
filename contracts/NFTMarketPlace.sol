@@ -6,7 +6,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 
 
-contract NFTMarketplace is ERC721, Ownable, ERC721URIStorage{
+contract VickishNFTMarketplace is ERC721, Ownable, ERC721URIStorage{
     uint256 private nextTokenId;
 
     event PurchaseMade(address indexed buyer, uint256 indexed tokenId, uint256 price);
@@ -21,8 +21,7 @@ contract NFTMarketplace is ERC721, Ownable, ERC721URIStorage{
     mapping(uint256 => Sale) public sales;
     mapping(address => bool) private isSeller;
 
-
-    constructor(address initialOwner) ERC721("NFTMarketplace", "NFTMKPL")  Ownable(initialOwner) {}
+    constructor(address initialOwner) ERC721("VickishNFTMarketplace", "VNFTM")  Ownable(initialOwner) {}
 
 
     function addSeller(address _seller) external onlyOwner {
